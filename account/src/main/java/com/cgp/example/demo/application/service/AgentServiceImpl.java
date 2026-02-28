@@ -1,0 +1,50 @@
+package com.cgp.example.demo.application.service;
+
+import com.cgp.example.demo.application.port.in.AgentService;
+import com.cgp.example.demo.application.port.in.CreateAgentRequest;
+import com.cgp.example.demo.application.port.in.CreateAgentResponse;
+import com.cgp.example.demo.application.port.out.AgentPersistencePort;
+import com.cgp.example.demo.domain.model.Agent;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * Implementation of the AgentService port.
+ * Contains the business logic for agent operations.
+ */
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class AgentServiceImpl implements AgentService {
+
+	private final AgentPersistencePort agentPersistencePort;
+
+	@Override
+	@Transactional
+	public CreateAgentResponse createAgent(CreateAgentRequest request) {
+		log.debug("Creating agent with name: {}", request.name());
+
+		validateRequest(request);
+		ensureNameIsUnique(request.name());
+
+		Agent agent = new Agent(null, request.name());
+		Agent savedAgent = agentPersistencePort.save(agent);
+
+		log.info("Created agent with id: {} and name: {}", savedAgent.id(), savedAgent.name());
+		return new CreateAgentResponse(savedAgent.id());
+	}
+
+	private void validateRequest(CreateAgentRequest request) {
+		if (request.name() == null || request.name().isBlank()) {
+			throw new IllegalArgumentException("Agent name cannot be null or blank");
+		}
+	}
+
+	private void ensureNameIsUnique(String name) {
+		if (agentPersistencePort.existsByName(name)) {
+			throw new IllegalStateException("Agent with name '" + name + "' already exists");
+		}
+	}
+}
