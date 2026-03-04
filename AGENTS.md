@@ -4,11 +4,9 @@ This file contains conventions and commands for agentic coding agents working in
 
 ## Project Overview
 
-Spring Boot 4.0.3 application with OpenTelemetry observability integration.
+Spring Boot 4.0.3 application.
 - **Language**: Java 25
 - **Build System**: Gradle
-- **Package**: `com.cgp.example.demo`
-- **Key Dependencies**: Spring Boot OpenTelemetry, Lombok, JUnit 5
 
 ## Build Commands
 
@@ -37,10 +35,10 @@ Spring Boot 4.0.3 application with OpenTelemetry observability integration.
 ./gradlew test
 
 # Run tests in a specific class
-./gradlew test --tests DemoApplicationTests
+./gradlew test --tests AccountApplicationTests
 
 # Run a single test method
-./gradlew test --tests DemoApplicationTests.contextLoads
+./gradlew test --tests AccountApplicationTests.contextLoads
 
 # Run tests with detailed output
 ./gradlew test --info
@@ -110,27 +108,30 @@ docker compose down
 - **Test Isolation**: Each test should be independent; use `@BeforeEach` for setup
 
 ### Project Structure
-The project structure aligns with the [Hexagonal architecture](https://alistair.cockburn.us/hexagonal-architecture):
+The whole project is a Gradle project with multiple subprojects.
+For each subproject, if it's a standalone microservice, then its structure should align with the [Hexagonal architecture](https://alistair.cockburn.us/hexagonal-architecture):
 ```
-src/
-├── main/
-│   ├── java/com/cgp/example/demo/    # Application code
-│   │   ├── adapter                   # Adapters
-│   │   ├── application               # Application logic
-│   │   │   ├── port                  # Ports
-│   │   │   └── service               # Application services
-│   │   └── domain                    # Domain logic
-│   │       ├── model                 # Domain models
-│   │       └── service               # Domain services
-│   └── resources/
-│       └── application.yaml          # Configuration
-└── test/
-    ├── java/com/cgp/example/demo/    # Test code
-    └── resources/                    # Test resources
+{service}/
+├── src/
+│   ├── main/
+│   │   ├── java/com/cgp/{service}/     # Application code
+│   │   │   ├── adapter                     # Adapters
+│   │   │   ├── application                 # Application logic
+│   │   │   │   ├── port                    # Ports
+│   │   │   │   └── service                 # Application services
+│   │   │   └── domain                      # Domain logic
+│   │   │       ├── model                   # Domain models
+│   │   │       └── service                 # Domain services
+│   │   └── resources/
+│   │       └── application.yaml            # Configuration
+│   └── test/
+│       ├── java/com/cgp/{service}/     # Test code
+│       └── resources/                      # Test resources
+└── build.gradle
 ```
 
 ### Configuration
-- **Application Config**: `src/main/resources/application.yaml`
+- **Application Config**: `{service}/src/main/resources/application.yaml`
 - **Environment**: Spring Boot supports profile-specific configs (e.g., `application-dev.yaml`)
 - **Observability**: OpenTelemetry auto-configured via Spring Boot starter
 
@@ -140,17 +141,7 @@ src/
 - Development dependencies use `developmentOnly` scope
 - Use `annotationProcessor` for annotation processors (Lombok)
 
-## Additional Notes
-
-- **Java Version**: Java 25 (enforced via Gradle toolchain)
-- **Git Hooks**: No pre-commit hooks configured
-- **CI/CD**: No CI configuration detected
-- **Code Quality**: No Checkstyle, SpotBugs, or PMD configured
-- **Documentation**: HELP.md contains Spring Boot reference links
-- **IDE**: Project supports IntelliJ IDEA, Eclipse, VS Code (see .gitignore)
-
 ## Development Workflow
-
 1. Make changes to source code
 2. Run `./gradlew test` to verify
 3. Run `./gradlew build` to package
@@ -158,7 +149,7 @@ src/
 5. Start observability stack with `docker compose up` for metrics/tracing
 
 When adding new features:
-- Follow package structure: `com.cgp.example.demo.{feature}`
+- Follow package structure: `com.cgp.{service}.{feature}`
 - Create corresponding test class: `{Feature}Tests`
 - Update `application.yaml` for new configuration properties
 - Add dependencies to `build.gradle` with appropriate scope
