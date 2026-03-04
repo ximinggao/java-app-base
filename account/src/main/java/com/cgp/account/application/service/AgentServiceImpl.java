@@ -5,6 +5,8 @@ import com.cgp.account.application.port.in.CreateAgentRequest;
 import com.cgp.account.application.port.in.CreateAgentResponse;
 import com.cgp.account.application.port.out.AgentPersistencePort;
 import com.cgp.account.domain.model.Agent;
+import io.micrometer.observation.annotation.ObservationKeyValue;
+import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,7 +25,8 @@ public class AgentServiceImpl implements AgentService {
 
 	@Override
 	@Transactional
-	public CreateAgentResponse createAgent(CreateAgentRequest request) {
+	@Observed(name = "create-agent")
+	public CreateAgentResponse createAgent(@ObservationKeyValue("agent.name") CreateAgentRequest request) {
 		log.debug("Creating agent with name: {}", request.name());
 
 		validateRequest(request);
