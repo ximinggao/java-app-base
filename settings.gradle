@@ -1,2 +1,3 @@
 rootProject.name = 'cgp-demo'
+include 'common'
 include 'account'
