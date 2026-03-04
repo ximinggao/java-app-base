@@ -21,33 +21,33 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AgentServiceImpl implements AgentService {
 
-	private final AgentPersistencePort agentPersistencePort;
+    private final AgentPersistencePort agentPersistencePort;
 
-	@Override
-	@Transactional
-	@Observed(name = "create-agent")
-	public CreateAgentResponse createAgent(@ObservationKeyValue("agent.name") CreateAgentRequest request) {
-		log.debug("Creating agent with name: {}", request.name());
+    @Override
+    @Transactional
+    @Observed(name = "create-agent")
+    public CreateAgentResponse createAgent(@ObservationKeyValue(key = "agent.name") CreateAgentRequest request) {
+        log.debug("Creating agent with name: {}", request.name());
 
-		validateRequest(request);
-		ensureNameIsUnique(request.name());
+        validateRequest(request);
+        ensureNameIsUnique(request.name());
 
-		Agent agent = new Agent(null, request.name());
-		Agent savedAgent = agentPersistencePort.save(agent);
+        Agent agent = new Agent(null, request.name());
+        Agent savedAgent = agentPersistencePort.save(agent);
 
-		log.info("Created agent with id: {} and name: {}", savedAgent.id(), savedAgent.name());
-		return new CreateAgentResponse(savedAgent.id());
-	}
+        log.info("Created agent with id: {} and name: {}", savedAgent.id(), savedAgent.name());
+        return new CreateAgentResponse(savedAgent.id());
+    }
 
-	private void validateRequest(CreateAgentRequest request) {
-		if (request.name() == null || request.name().isBlank()) {
-			throw new IllegalArgumentException("Agent name cannot be null or blank");
-		}
-	}
+    private void validateRequest(CreateAgentRequest request) {
+        if (request.name() == null || request.name().isBlank()) {
+            throw new IllegalArgumentException("Agent name cannot be null or blank");
+        }
+    }
 
-	private void ensureNameIsUnique(String name) {
-		if (agentPersistencePort.existsByName(name)) {
-			throw new IllegalStateException("Agent with name '" + name + "' already exists");
-		}
-	}
+    private void ensureNameIsUnique(String name) {
+        if (agentPersistencePort.existsByName(name)) {
+            throw new IllegalStateException("Agent with name '" + name + "' already exists");
+        }
+    }
 }
