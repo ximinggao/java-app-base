@@ -70,7 +70,7 @@ docker compose down
 - Prefer `java.*` and `org.*` over `com.*` where applicable
 
 ### Formatting
-- **Indentation**: Use tabs (project convention observed in existing files)
+- **Indentation**: Use 4 spaces
 - **Bracing Style**: K&R style (opening brace on same line as statement)
 - **Line Length**: Recommended 120 characters (soft limit)
 - **Blank Lines**: One blank line between methods, two between class members
