@@ -5,6 +5,8 @@ import com.cgp.account.application.port.in.CreateAgentRequest;
 import com.cgp.account.application.port.in.CreateAgentResponse;
 import com.cgp.account.application.port.out.AgentPersistencePort;
 import com.cgp.account.domain.model.Agent;
+import io.micrometer.observation.Observation;
+import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.annotation.ObservationKeyValue;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AgentServiceImpl implements AgentService {
 
     private final AgentPersistencePort agentPersistencePort;
+    private final ObservationRegistry observationRegistry;
 
     @Override
     @Transactional
@@ -33,7 +36,9 @@ public class AgentServiceImpl implements AgentService {
         ensureNameIsUnique(request.name());
 
         Agent agent = new Agent(null, request.name());
-        Agent savedAgent = agentPersistencePort.save(agent);
+
+        Agent savedAgent = Observation.createNotStarted("save-agent", this.observationRegistry)
+                .observe(() -> agentPersistencePort.save(agent));
 
         log.info("Created agent with id: {} and name: {}", savedAgent.id(), savedAgent.name());
         return new CreateAgentResponse(savedAgent.id());
