@@ -1,0 +1,48 @@
+# Sequin CDC Configuration
+# This file configures Sequin to capture changes from PostgreSQL and publish to Kafka
+
+account:
+  name: "cgp-demo"
+
+# Source database configuration
+databases:
+  - name: "account-db"
+    hostname: "postgres"
+    port: 5432
+    database: "account"
+    username: "demo"
+    password: "demo"
+    ssl: false
+    pool_size: 10
+    # Replication slot configuration
+    slot:
+      name: "sequin_slot"
+      create_if_not_exists: true
+    # Publication configuration
+    publication:
+      name: "sequin_pub"
+      create_if_not_exists: true
+
+# Sink configuration - publish to Kafka
+sinks:
+  - name: "agents-cdc"
+    database: "account-db"
+    status: "active"
+    # Capture all change types
+    actions:
+      - insert
+      - update
+      - delete
+    # Source tables to capture
+    source:
+      include_tables:
+        - "public.agents"
+    # Kafka destination
+    destination:
+      type: "kafka"
+      hosts: "kafka:9092"
+      topic: "account.agents.events"
+      tls: false
+    # Batch settings for optimal throughput
+    batch_size: 1
+    message_grouping: true
