@@ -2,7 +2,7 @@
 -- This script runs when PostgreSQL container starts for the first time
 
 -- Create sequin database for Sequin's internal state
--- CREATE DATABASE sequin;
+CREATE DATABASE sequin;
 
 -- Grant postgres user access to sequin database
 -- GRANT ALL PRIVILEGES ON DATABASE sequin TO postgres;
@@ -12,15 +12,17 @@
 -- GRANT ALL ON SCHEMA public TO postgres;
 
 -- Create business databases
-CREATE DATABASE account;
+-- CREATE DATABASE account;
 
 -- Connect back to postgres database for replication setup
 \connect account
 
--- CREATE TABLE IF NOT EXISTS public.agents (
---   id BIGSERIAL PRIMARY KEY,
---   name VARCHAR(255) NOT NULL
--- );
+CREATE TABLE IF NOT EXISTS agents (
+  id BIGSERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL
+);
+
+ALTER TABLE agents REPLICA IDENTITY FULL;
 
 -- create or replace function public.update_timestamp()
 --   returns trigger
