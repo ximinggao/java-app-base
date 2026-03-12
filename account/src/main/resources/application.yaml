@@ -1,17 +1,16 @@
 spring:
   application:
-    name: account
+    name: cgp-account
   datasource:
-    url: jdbc:postgresql://localhost:5432/account
-    username: demo
-    password: demo
+#    url: jdbc:postgresql://asdf:5432/account
+    username: postgres
+    password: postgres
     driver-class-name: org.postgresql.Driver
+    hikari:
+      jdbc-url: jdbc:postgresql://asdf:5432/account
   jpa:
     hibernate:
-      ddl-auto: validate
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+      ddl-auto: create-drop
 
 server:
   port: 8080

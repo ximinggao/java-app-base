@@ -1,5 +1,6 @@
 # Sequin CDC Configuration
 # This file configures Sequin to capture changes from PostgreSQL and publish to Kafka
+# Not used in the current setup.
 
 account:
   name: "cgp-demo"
@@ -10,8 +11,8 @@ databases:
     hostname: "postgres"
     port: 5432
     database: "account"
-    username: "demo"
-    password: "demo"
+    username: "postgres"
+    password: "postgres"
     ssl: false
     pool_size: 10
     # Replication slot configuration
@@ -40,7 +41,7 @@ sinks:
     # Kafka destination
     destination:
       type: "kafka"
-      hosts: "kafka:9092"
+      hosts: "host.docker.internal:9092"
       topic: "account.agents.events"
       tls: false
     # Batch settings for optimal throughput
