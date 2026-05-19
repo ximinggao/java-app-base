@@ -17,7 +17,7 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+#      - postgres_data:/var/lib/postgresql/data
       - ./postgres/init:/docker-entrypoint-initdb.d:ro
     command: ["postgres", "-c", "wal_level=logical"]
     healthcheck:
@@ -115,6 +115,6 @@ services:
       retries: 10
 
 volumes:
-  postgres_data:
+#  postgres_data:
   redis_data:
   kafka_data:
